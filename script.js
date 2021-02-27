@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Queue Automation
 // @namespace    akito
-// @version      1.7.0
+// @version      1.7.1
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528
 // @match        https://www.bestbuy.com/*skuId=*
@@ -14,6 +14,7 @@
 // 1.6.0 - Changed polling to be on set interval instead of on mutation (now it works!)
 // 1.6.1 - Very minor changes so that hopefully banner stays on one line?
 // 1.7.0 - Added initial click functionality for automatic clicking on page load
+// 1.7.1 - Moved notification sound retrieval to page load so it would play correctly
 
 const title = "Best Buy (Product Details) Automation by akito#9528 / Albert Sun";
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
@@ -67,6 +68,7 @@ function buttonAvailable(button) {
     // At that point, it clicks the button, plays a fancy notification sound, and opens a new window with express checkout.
     document.addEventListener("DOMContentLoaded", async function() {
         document.body.append(banner); // add banner to DOM
+        const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
 
         // check current product status (available, sold out, waiting)
         const cartButton = document.getElementsByClassName("add-to-cart-button")[0];
@@ -115,7 +117,6 @@ function buttonAvailable(button) {
                 // click button, play audio, and open window
                 cartButton.click();
                 window.open("https://www.bestbuy.com/checkout/r/fast-track");
-                const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
                 audio.play();
 
                 // clear polling if chosen
