@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Queue Automation
 // @namespace    akito
-// @version      1.5.0
+// @version      1.6.1
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528
 // @match        https://www.bestbuy.com/*skuId=*
@@ -14,6 +14,7 @@
 // 1.4.0 - Changed workings to check for aria-described-by for overlay?
 // 1.5.0 - Changed workings to check rendered button color, hopefully works now
 // 1.6.0 - Changed polling to be on set interval instead of on mutation (now it works!)
+// 1.6.1 - Very minor changes so that hopefully banner stays on one line?
 
 const title = "Best Buy (Product Details) Automation by akito#9528 / Albert Sun";
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
@@ -41,14 +42,14 @@ function buttonAvailable(button) {
     // initialize left status banner
     let statusInfo = document.createElement("div");
     statusInfo.style.textAlign = "left"; statusInfo.style.paddingLeft = "10px";
-    statusInfo.style.order = 0; statusInfo.style.flexBasis = "40%"; // set as child, index 0, 1/4 size
+    statusInfo.style.order = 0; statusInfo.style.flexBasis = "50%"; // set as child, index 0, 1/4 size
     statusInfo.innerText = `${title} | Initializing script`;
     banner.appendChild(statusInfo);
 
     // initialize right donation banner
     let donationInfo = document.createElement("div");
     donationInfo.style.textAlign = "right"; donationInfo.style.paddingRight = "10px";
-    donationInfo.style.order = 1; donationInfo.style.flexBasis = "60%"; // set as child, index 0, 1/4 size
+    donationInfo.style.order = 1; donationInfo.style.flexBasis = "50%"; // set as child, index 0, 1/4 size
     donationInfo.innerText = donationText;
     banner.appendChild(donationInfo);
 
