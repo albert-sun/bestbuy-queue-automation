@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Queue Automation
 // @namespace    akito
-// @version      1.6.1
+// @version      1.7.0
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528
 // @match        https://www.bestbuy.com/*skuId=*
@@ -11,15 +11,24 @@
 // ==/UserScript==
 
 // Version Changelog
-// 1.4.0 - Changed workings to check for aria-described-by for overlay?
-// 1.5.0 - Changed workings to check rendered button color, hopefully works now
 // 1.6.0 - Changed polling to be on set interval instead of on mutation (now it works!)
 // 1.6.1 - Very minor changes so that hopefully banner stays on one line?
+// 1.7.0 - Added initial click functionality for automatic clicking on page load
 
 const title = "Best Buy (Product Details) Automation by akito#9528 / Albert Sun";
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
-const keepChecking = false; // Whether to keep polling on page once item is added to cart        | Default: false
-const pollInterval = 500;   // In milliseconds, interval between button pollign for availability | Default: 500
+
+// Script configuration for editing purposes
+const config = {
+    keepPolling:  false, // Whether to keep polling on page once item is added to cart          | Default: false
+    initialClick: true,  // Whether to click the initial "Add to Cart" button upon loading page | Default: true
+    pollInterval: 500,   // In milliseconds, interval between button pollign for availability   | Default: 500
+    initDelay:    500,   // In milliseconds, interval before initially clicking the add button  | Default: 500
+
+    // Keyword whitelist for initial clicking, delete or make empty array to ignore.
+    // Default: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
+    keywords: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
+}
 
 // Quick dirty function which checks the rendered button color for availability.
 function buttonAvailable(button) {
@@ -56,8 +65,6 @@ function buttonAvailable(button) {
     // Mutation Observer to detect HTML changes to the "Add to Cart" / "Please Wait" button
     // The script waits until the button color changes from grey (Please Wait) back to yellow (Add to Cart).
     // At that point, it clicks the button, plays a fancy notification sound, and opens a new window with express checkout.
-    // > Note: untested on actual drops, only manually tested by manually changing the HTML
-    // > Note: only tested on changing of element's classes, unsure if changes within a class cause mutation
     document.addEventListener("DOMContentLoaded", async function() {
         document.body.append(banner); // add banner to DOM
 
@@ -72,6 +79,27 @@ function buttonAvailable(button) {
             return;
         }
 
+        // delay for initial button clicking if setting enabled.
+        if(initAvailable === true && config.initialClick === true && config.keywords !== undefined && config.keywords !== []) {
+            const productName = document.getElementsByTagName("title")[0].innerText;
+
+            // check whether the product name contains any of the given keywords
+            let hasKeyword = false;
+            for(const word of config.keywords) {
+                if(productName.includes(word)) {
+                    hasKeyword = true;
+
+                    break;
+                }
+            } // only process click if keyword found
+            if(hasKeyword === true) {
+                setTimeout(function() {
+                    cartButton.click()
+                }, config.initDelay);
+            }
+        }
+
+        // periodic polling for current button color every Xms.
         let intervalID = setInterval(function() {
             let currentAvailable = buttonAvailable(cartButton);
             console.log(window.getComputedStyle(cartButton, null).getPropertyValue("background-color"), initAvailable, currentAvailable);
@@ -85,16 +113,16 @@ function buttonAvailable(button) {
                 statusInfo.innerHTML = `${title} | Availability change detected, button clicked and window opened! Good luck!`;
 
                 // click button, play audio, and open window
-                const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
-                audio.play();
                 cartButton.click();
                 window.open("https://www.bestbuy.com/checkout/r/fast-track");
+                const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
+                audio.play();
 
                 // clear polling if chosen
-                if(keepChecking === false) {
+                if(config.keepPolling === false) {
                     clearInterval(intervalID);
                 }
             }
-        }, pollInterval);
+        }, config.pollInterval);
     });
 }());
