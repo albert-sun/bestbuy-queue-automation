@@ -12,5 +12,5 @@ A: You can either check the TamperMonkey or GreaseMonkey icon (it should have a 
 Install the script through the TamperMonkey extension for Chrome or the GreaseMonkey extension for Firefox.  
 [Copy the contents of the script here as a new script into the above extensions](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script.js).  
 - The script automatically runs on page load (a red-orange banner should appear)
-- You have to press the initial "Add to Cart" button and notice the banner change.
+- You only have to press the initial "Add to Cart" button if you don't have initialClick enabled in the script config.
 - At that point, when the queue pops the button will automatically click, play a sound, and open the cart window!
