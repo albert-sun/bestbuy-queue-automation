@@ -85,10 +85,10 @@ function buttonAvailable(button) {
                 statusInfo.innerHTML = `${title} | Availability change detected, button clicked and window opened! Good luck!`;
 
                 // click button, play audio, and open window
-                cartButton.click();
-                window.open("https://www.bestbuy.com/checkout/r/fast-track");
                 const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
                 audio.play();
+                cartButton.click();
+                window.open("https://www.bestbuy.com/checkout/r/fast-track");
 
                 // clear polling if chosen
                 if(keepChecking === false) {
