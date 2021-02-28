@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Best Buy Queue Automation
+// @name         Best Buy (Product Details) Automation
 // @namespace    akito
 // @version      1.7.1
 // @description  Auto-presses drops when button changes to Add
