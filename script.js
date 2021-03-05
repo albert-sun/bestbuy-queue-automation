@@ -25,7 +25,7 @@ const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsn
 const scriptConfig = {
     keepPolling: false,   // Whether to continue periodically polling for product availability once added to cart            | Default: false
     initialClick: true,   // Whether to auto-click the "Add to Cart" button upon page load (if description includes keyword) | Default: true
-    soldOutReload: true, // Whether to auto-reload the page after a delay when sold out (if description includes keyword)   | Default: false
+    soldOutReload: true, // Whether to auto-reload the page after a delay when sold out (if description includes keyword)   | Default: true
     // ======================================================================================================================================
     pollInterval: 0.5, // In seconds, interval between periodic button polls when checking for availability              | Default: 0.5
     initialDelay: 0.5, // In seconds, delay on page load before auto-clicking the add button (to update existing status) | Default: 0.5
