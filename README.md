@@ -1,6 +1,5 @@
 # bestbuy-queue-automation
 Simple Tampermonkey script for automating Best Buy's product queue.  
-Beta version lints fine but is untested (adds auto-reload on unavailable / sold out products), if you're interested [download the source here](https://github.com/albert-sun/bestbuy-queue-automation/tree/beta) and test it out for yourself. Thank you!
 
 # Frequently Asked Questions
 **Q: Does this script work on non-focused tabs?**
