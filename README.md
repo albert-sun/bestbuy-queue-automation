@@ -15,7 +15,7 @@ A: Yes, the two scripts run on separate sets of pages so you don't have to worry
 # Instructions
 Install the script through the TamperMonkey extension for Chrome or the GreaseMonkey extension for Firefox.  
 Copy the contents of the below scripts as new scripts into the downloaded extension.  
-**The cart script works on the cart page for the saved items as an alternative to the saved items page.**  
+**The cart script works on the cart page for SAVED ITEMS as an alternative to the saved items page.**  
 >> [Download the product details page script here](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_product.js) <<  
 >> [Download the cart saved items script here](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_cart.js) <<  
 
