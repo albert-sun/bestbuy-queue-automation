@@ -32,8 +32,8 @@ const scriptConfig = {
     soldOutDelay: 60,  // In seconds, delay before refreshing page when product is sold out (to refresh product details) | Default: 60
     // ======================================================================================================================================
     // Keyword inclusion whitelist for initial clicking and auto-reloading, delete or make empty array for script to ignore.
-    // Default: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
-    keywords: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
+    // Default: ["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
+    keywords: ["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
 }
 
 // Quick and dirty function which checks whether the given button / div is yellow (usually RGB around 255, 255, 0).
