@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Product Details)
 // @namespace    akito
-// @version      2.0.0
+// @version      2.0.1
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @match        https://www.bestbuy.com/*skuId=*
@@ -14,6 +14,7 @@
 // 1.7.1 - Moved notification sound retrieval to page load so it would play correctly
 // 1.8.0 - Added auto page-reload functionality on sold-out products with the given keywords
 // 2.0.0 - Refactored existing code and added auto-reload for sold out / unavailable products
+// 2.0.1 - Added a line of code I forgot when porting, sigh
 
 const version = "2.0.0";
 const scriptDesc = `Best Buy Automation (Product Details) v${version} by akito#9528 / Albert Sun`;
@@ -134,6 +135,8 @@ function containsSubstring(word, keywords) {
             let nowAvailable = buttonYellow(addButton);
             if(addAvailable === true && nowAvailable === false) { // button clicked to enter queue (yellow => grey)
                 statusInfo.innerHTML = `${scriptDesc} | Queue entry detected, waiting for button availability change`;
+                
+                addAvailable = false;
             } else if(addAvailable === false && nowAvailable === true) { // queue popped (grey => yellow)
                 statusInfo.innerHTML = `{scriptDesc} | Availability change detected, button clicked and window opened. Good luck!`;
 
