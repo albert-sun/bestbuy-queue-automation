@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      1.0.3
+// @version      1.0.4
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
@@ -13,11 +13,11 @@
 /* globals $ */
 
 // Version Changelog
-// 1.0.1 - Added forced refresh on queue initial entry to guarantee showing of "Please Wait" overlay, fixed keyword check
 // 1.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
 // 1.0.3 - Fixed small bug with assigning to constant variable, still dinging randomly though so please disable clickRefresh in config if it acts weirdly.
+// 1.0.4 - Quick return statement after forced refresh on queue initial entry to prevent audio from going off mistakenly
 
-const version = "1.0.3";
+const version = "1.0.4";
 const scriptDesc = `Best Buy Automation (Cart Saved Items) v${version} by akito#9528 / Albert Sun`;
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
 
@@ -128,6 +128,7 @@ function containsSubstring(word, keywords) {
         }
         if(clicked === true && scriptConfig.clickRefresh === true) {
             window.location.reload();
+            return;
         }
 
         statusInfo.innerHTML = `${scriptDesc} | Analysis complete, ${productsQueue.length} of ${productButtons.length} items queued, polling ...`;
