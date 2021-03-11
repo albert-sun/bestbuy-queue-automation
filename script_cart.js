@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      1.0.0
+// @version      1.0.1
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @match        https://www.bestbuy.com/cart
@@ -12,6 +12,7 @@
 
 // Version Changelog
 // 1.0.0 - Initial release, clunky reload on successful item addition because difficult to detect DOM unload
+// 1.0.1 - Added forced refresh on queue initial entry to guarantee showing of "Please Wait" overlay, fixed keyword check
 
 const version = "1.0.0";
 const scriptDesc = `Best Buy Automation (Cart Saved Items) v${version} by akito#9528 / Albert Sun`;
@@ -95,6 +96,7 @@ function containsSubstring(word, keywords) {
         const productNames = $(".saved-items__card-wrapper .simple-item__description").toArray();
 
         // Check all saved items for auto-click and queue addition
+        const clicked = false; // Refresh page if any products initially clicked
         const productsQueue = []; // Elements to periodically poll for queue
         for(const index in productNames) {
             statusInfo.innerHTML = `${scriptDesc} | Analyzing ${Number(index)+1}/${productButtons.length} saved items from cart page.`;
@@ -110,13 +112,17 @@ function containsSubstring(word, keywords) {
                 addButton.click();
                 await new Promise(r => setTimeout(r, 250)); // Wait for click to propogate
                 available = !buttonClickable(addButton); // Check whether entered into queue
+                clicked = true;
             } // Once clicked, check whether product is now added to queue or something
-            if(disabled === false && available === false) { // Currently in queue
+            if(hasKeyword === true && disabled === false && available === false) { // Currently in queue
                 productsQueue.push({
                     button: addButton,
                     description: productDesc,
                 });
             }
+        }
+        if(clicked === true) {
+            window.location.reload();
         }
 
         statusInfo.innerHTML = `${scriptDesc} | Analysis complete, ${productsQueue.length} of ${productButtons.length} items queued, polling ...`;
@@ -135,7 +141,7 @@ function containsSubstring(word, keywords) {
 
                     // Force reload since most convenient
                     await new Promise(r => setTimeout(r, 1500));
-                    window.location.reload()
+                    window.location.reload();
                 }
             }, scriptConfig.pollInterval * 1000);
         }
