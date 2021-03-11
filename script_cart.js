@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      1.0.2
+// @version      1.0.3
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
@@ -13,11 +13,11 @@
 /* globals $ */
 
 // Version Changelog
-// 1.0.0 - Initial release, clunky reload on successful item addition because difficult to detect DOM unload
 // 1.0.1 - Added forced refresh on queue initial entry to guarantee showing of "Please Wait" overlay, fixed keyword check
 // 1.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
+// 1.0.3 - Fixed small bug with assigning to constant variable, still dinging randomly though so please disable clickRefresh in config if it acts weirdly.
 
-const version = "1.0.2";
+const version = "1.0.3";
 const scriptDesc = `Best Buy Automation (Cart Saved Items) v${version} by akito#9528 / Albert Sun`;
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
 
@@ -27,6 +27,7 @@ const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsn
 const scriptConfig = {
     pollInterval: 0.5, // In seconds, interval between periodic button polls when checking for availability              | Default: 0.5
     // ======================================================================================================================================
+    clickRefresh: true, // Whether to refresh after clicking initial add buttons since sometimes the overlay doesn't show up | Default: true
     // Keyword inclusion whitelist for initial clicking and auto-reloading, delete or make empty array for script to ignore.
     // Default: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
     keywords: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]
@@ -99,7 +100,7 @@ function containsSubstring(word, keywords) {
         const productNames = $(".saved-items__card-wrapper .simple-item__description").toArray();
 
         // Check all saved items for auto-click and queue addition
-        const clicked = false; // Refresh page if any products initially clicked
+        let clicked = false; // Refresh page if any products initially clicked
         const productsQueue = []; // Elements to periodically poll for queue
         for(const index in productNames) {
             statusInfo.innerHTML = `${scriptDesc} | Analyzing ${Number(index)+1}/${productButtons.length} saved items from cart page.`;
@@ -111,6 +112,7 @@ function containsSubstring(word, keywords) {
 
             // Check whether to initially click add button by checking keyword
             const hasKeyword = containsSubstring(productDesc, scriptConfig.keywords);
+            console.log(productDesc, hasKeyword);
             if(hasKeyword === true && disabled === false && available === true) { // Whitelisted, unqueued, and clickable
                 addButton.click();
                 await new Promise(r => setTimeout(r, 250)); // Wait for click to propogate
@@ -124,7 +126,7 @@ function containsSubstring(word, keywords) {
                 });
             }
         }
-        if(clicked === true) {
+        if(clicked === true && scriptConfig.clickRefresh === true) {
             window.location.reload();
         }
 
