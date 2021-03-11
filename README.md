@@ -6,6 +6,8 @@ Simple Tampermonkey scripts for automating Best Buy's product queue.
 2) Download either/both of the [product details script](https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_product.js) or the [cart saved items script](https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js) and add them individually as new scripts to the extension.
    
 3) The product details script has page scope of all individual items while the cart saved items script has page scope of ONLY the cart page. **Note that the script does not function on the dedicated saved items page - instead, use the saved items view at the bottom of the cart page.**
+   
+4) The script also auto-updates depending on your extension settings (TamperMonkey: Dashboard -> Settings -> Script Update under "Check Interval", make sure it's not disabled), or you can manually update by clicking the extension icon and pressing "Check for userscript updates".
 
 # Individual script runtime instructions
 |**Script**          |**Instructions**                                       |
