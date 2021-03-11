@@ -1,23 +1,30 @@
 # bestbuy-queue-automation
-Simple Tampermonkey script for automating Best Buy's product queue.  
-**SOMEWHAT UNTESTED, if you're feeling safe feel free to download 1.7.1 [here](https://github.com/albert-sun/bestbuy-queue-automation/tree/ad80072d2ee0d8a96ade54eb1f9d6110fabdbb8e)**
+Simple Tampermonkey scripts for automating Best Buy's product queue.  
+# Script Installation
+1) Install the TamperMonkey extension for Chrome or the GreaseMonkey extension for Firefox to load and automatically run the scripts on page load.
+
+2) Download either/both of the [product details script](https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_product.js) or the [cart saved items script](https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js) and add them individually as new scripts to the extension.
+   
+3) The product details script has page scope of all individual items while the cart saved items script has page scope of ONLY the cart page. **Note that the script does not function on the dedicated saved items page - instead, use the saved items view at the bottom of the cart page.**
+
+# Individual script runtime instructions
+|**Script**          |**Instructions**                                       |
+|----------------|---------------------------------------------------|
+|Product Details |On page load, the script will initially click the Add button for all products containing whitelisted keywords. When the queue pops, the script will automatically press the button, play a notification sound, and open the cart page in a new window for checkout.|
+|Cart Saved Items|On page load, the script will parse all saved products. If there are any products not currently queued and addable, the script will click the Add button and refresh the page. When the queue pops, the script will automatically press the button, play a notification sound, and reload the cart page. In the event of multiple items popping simultaneously, the script should (theoretically) keep refreshing and adding items until they're all within the cart.|
 
 # Frequently Asked Questions
-**Q: Does this script work on non-focused tabs / multiple tabs?**
-A: The script runs as long as the tab has been focused once (for instance, if you click "Open in new tab" you would have to navigate to the tab). The script also only works during the queue, so make sure to press the initial "Add to Cart" button to initiate the queue (you should see the bottom left status change).  
+**Q: Does this script work on multiple / non-focused tabs?**  
+A: The script runs in the background **as long as the tab has been focused once (for instance, if you CTRL+CLICK a link or right click and select "Open in new tab", you would have to navigate to the tab once before clicking away). 
 
-**Q: How do I know the script is running?**
-A: You can either check the TamperMonkey or GreaseMonkey icon (it should have a little red [1] signifying the script is active), or you can check for the red-orange banner at the bottom of the product page. Keep in mind that the script currently only functions on individual product pages and not on search results or the saved items page.
+**Q: Can I run the two scripts simultaneously?**  
+A: Yes - the two scripts have non-overlapping page scopes which means they won't interfere with each other (though the queue popping on both scripts might cause some issues). It's perfectly fine to have multiple indvidual product pages as well as the cart page open and running the scripts.
 
-**Q: Can I have both scripts running at the same time?**
-A: Yes, the two scripts run on separate sets of pages so you don't have to worry about them conflicting with each other.
+**Q: How do I know when the script is running?**  
+A: Two methods: you can either check the top right-hand corner of the browser and check the TamperMonkey / GreaseMonkey icon, or you can check the bottom of the page which should show a red-orange banner.
 
-# Instructions
-Install the script through the TamperMonkey extension for Chrome or the GreaseMonkey extension for Firefox.  
-Copy the contents of the below scripts as new scripts into the downloaded extension.  
-**The cart script works on the cart page for SAVED ITEMS as an alternative to the saved items page.**  
-[Download the product details page script here](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_product.js)  
-[Download the cart saved items script here](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_cart.js)   
-
-- The scripts automatically run on page load (a red-orange banner should appear on the bottom of the page).
-- When the queue pops the button will automatically click, play a sound, and either open or refresh the cart window (depending on script)!
+# Miscellaneous Information
+Discord contact for support / suggestions / etc: akito#9528  
+Bitcoin: 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t  
+Ethereum: 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD  
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD) via PayPal, thanks!
