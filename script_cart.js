@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      1.0.1
+// @version      1.0.2
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
+// @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        none
@@ -13,8 +15,9 @@
 // Version Changelog
 // 1.0.0 - Initial release, clunky reload on successful item addition because difficult to detect DOM unload
 // 1.0.1 - Added forced refresh on queue initial entry to guarantee showing of "Please Wait" overlay, fixed keyword check
+// 1.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
 
-const version = "1.0.0";
+const version = "1.0.2";
 const scriptDesc = `Best Buy Automation (Cart Saved Items) v${version} by akito#9528 / Albert Sun`;
 const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
 
