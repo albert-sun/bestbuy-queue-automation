@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         Best Buy Automation (Product Details)
 // @namespace    akito
-// @version      2.0.1
+// @version      2.0.2
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
+// @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_product.js
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_product.js
 // @match        https://www.bestbuy.com/*skuId=*
 // @match        https://www.bestbuy.com/site/combo/*
 // @run-at       document-start
@@ -15,6 +17,7 @@
 // 1.8.0 - Added auto page-reload functionality on sold-out products with the given keywords
 // 2.0.0 - Refactored existing code and added auto-reload for sold out / unavailable products
 // 2.0.1 - Added a line of code I forgot when porting, sigh
+// 2.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
 
 const version = "2.0.0";
 const scriptDesc = `Best Buy Automation (Product Details) v${version} by akito#9528 / Albert Sun`;
