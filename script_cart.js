@@ -143,6 +143,8 @@ async function resetSaved(skipUnload, fromCart) {
     // Setup page banner and initiate runtime when page fully loaded
     // User also notified through alert / banner if adblock detected
     window.addEventListener('DOMContentLoaded', async function() {
+        alert("The new version of the script, while tested somewhat thoroughly (checklist at bottom of script) does not currently have a UI and could be glitchy. Revert to https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/b792aa9fc72062772baf598f4dca71afb5dc79fa/script_cart.js if you're uncomfortable.")
+
         // Short delay to allow for adblock probes to finish
         if(scriptConfig.checkAdblock === true) {
             await new Promise(r => setTimeout(r, 1000));
