@@ -8,7 +8,7 @@ A collection of Tampermonkey userscripts for automating Best Buy's constrained i
 [Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | [My Bitcoin Address](1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t) | [My Ethereum Address](0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD)
 
 ## Installation
-1) Install either the TamperMonkey extension for Google Chrome / derivatives or the GreaseMonkey extension for Firefox.
+1) Install either the TamperMonkey extension for Chrome / derivatives or the GreaseMonkey extension for Firefox.
 2) Download the desired scripts linked within the [Scripts](<https://github.com/albert-sun/bestbuy-queue-automation#Scripts>) section and add them to TamperMonkey / GreaseMonkey as a new script (for Tampermonkey: click extension icon -> "Create a new script...").
 3) Save the script by pressing CTRL+S, then verify its installation by comparing against the list of currently installed userscripts (for Tampermonkey: dashboard -> "Installed userscripts").
 4) Script should automatically update depending on the check interval within the extension settings (enabled by default) but I might change the repository name or script filename eventually which will break script updates. **Check this README every now and then if possible, important notices will be pinned at the top.**
