@@ -15,18 +15,18 @@ A collection of Tampermonkey userscripts for automating Best Buy's constrained i
 
 ## Scripts
 |Script|Latest Version|Page Scope|Features|
-|----------------|--------------|------------------------|--------|
+|----------------|:------------:|------------------------|--------|
 |[Product Details](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_product.js)|2.0.2|Individual product pages|<ul><li>Automatic interval page reloading for refreshing current status of product, useful for refreshing availability on sold out or unavailable products</li><li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification and opening of cart window whenever item is successfully added to cart</ul>|
 |[Cart Saved Items](https://github.com/albert-sun/bestbuy-queue-automation/blob/main/script_cart.js)|2.0.0|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
 
 ## Frequently Asked Questions
-**Q: Do scripts function on multiple / non-focused tabs?**  
+**Q: Do scripts work on multiple / non-focused tabs?**  
 A: The script automatically runs in the background regardless of whether the tab is currently being focused (unless the page has been unloaded from your browser) **as long as the page has been focused at least once.** This means that if you, for instance, opened a page using CTRL+CLICK or right clicked and selected "Open link in new tab", you would have to navigate to the tab once before clicking away.  
 
-**Q: Can I run different scripts simultaneously?**  
+**Q: Can I run multiple scripts simultaneously?**  
 A: Yes! All scripts should have different page scopes meaning you should never have multiple scripts running on a single page. However, their functions might overlap if you have multiple of the same tab open or are running two scripts with essentially overlapping functions (for example, both the Best Buy product page and cart scripts).  
 
-**Q: How do I know when the script is running?**  
+**Q: How do I confirm that the script is running?**  
 A: Two methods: you can either click the extension icon in the top right-hand corner of the browser and check that the script is enabled (no script shown means not installed) or check the bottom of the page for a red-orange banner showing the script information and status.  
 
 ## Troubleshooting
