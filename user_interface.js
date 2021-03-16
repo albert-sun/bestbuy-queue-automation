@@ -1,7 +1,7 @@
 let footer; // Footer containing all icons and statuses
-let windowIndex = 0;  // Index of generated window
-const statuses = [];  // Window open statuses (true / false)
-const selectors = []; // jQuery selectors for window sliding
+let windowIndex = 0; // Index of generated window
+const statuses = []; // Window open statuses (true / false)
+const selectors = []; // Window elements for sliding
 
 // Displayed windows slideToggle control ensuring only one window at a time is shown.
 // Faster sliding transition when closing previous window when new window is being opened.
@@ -23,6 +23,9 @@ function windowControl(index) {
     }
 };
 
+// Generate red-orange header with text, pretty simple.
+// @param {string} text
+// @returns {DOMElement}
 function generateHeader(text) {
     // Generate header wrapper element
     const header = document.createElement("div");
@@ -31,6 +34,7 @@ function generateHeader(text) {
     // Generate div containing actual text
     const headerText = document.createElement("p");
     header.appendChild(headerText);
+    headerText.classList.add("akito-headerTitle");
     headerText.innerText = text;
 
     return header;
@@ -62,12 +66,11 @@ function generateWindow(iconURL, title, width, height, settingsInfo) {
     const index = windowIndex++; // Copy constant for onclick
     footer.insertBefore(iconClick, footer.children[footer.children.length - 2]); // doesn't matter because order
     iconClick.classList.add("akito-iconClick");
-    iconClick.style.order = placeIndex;
+    iconClick.classList.add(`akito-icon${placeIndex}`);
     iconClick.href = "#";
-    iconClick.onclick = function() { 
-        console.log(index);
-        windowControl(index); 
-        return false; 
+    iconClick.onclick = function() {
+        windowControl(index);
+        return false;
     }; // Toggle window with given index
 
     // Initialize icon for window toggle "button"
@@ -79,12 +82,7 @@ function generateWindow(iconURL, title, width, height, settingsInfo) {
     // Initialize actual window with given width, height, and left offset
     const thisWindow = document.createElement("div");
     thisWindow.classList.add("akito-window");
-    thisWindow.style.width = width;
-    Object.assign(thisWindow.style, {
-        width: width,
-        height: height,
-        left: 3 + index * 30
-    });
+    // Best Buy doesn't let me set the left property that's so stupid
     statuses[index] = false;
     selectors[index] = $(thisWindow);
 
@@ -100,6 +98,7 @@ function generateWindow(iconURL, title, width, height, settingsInfo) {
     // Add to document body and retrieve selector when loaded
     $(document).ready(function() {
         document.body.appendChild(thisWindow);
+        $(thisWindow).hide(); // Best Buy forcing me to initially hide?
         new SimpleBar(contentDiv);
     });
 
@@ -147,17 +146,11 @@ function designateLogging(contentDiv) {
     return function(message) {
         const row = document.createElement("tr");
 
+        // Generate timestamp cell
         const timestamp = "[" + (new Date()).toISOString().substring(11, 19) + "]";
-        const timeCell = document.createElement("td");
-        row.appendChild(timeCell);
-        timeCell.innerText = timestamp;
-
-        const messageCell = document.createElement("td");
-        row.appendChild(messageCell);
-        Object.assign(timeCell.style, {
-            whiteSpace: "nowrap", // Don't let wrap, should never be that long
-        });
-        messageCell.innerText = message;
+        const loggingCell = document.createElement("td");
+        row.appendChild(loggingCell);
+        loggingCell.innerText = `${timestamp} ${message}`;
 
         loggingTable.insertBefore(row, loggingTable.firstChild);
     }
