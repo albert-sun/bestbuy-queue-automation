@@ -261,6 +261,7 @@
 /* left, width, and height defined externally */
 .akito-window {
   position: fixed;
+  left: 3px;
   bottom: 29px;
   width: 400px;
   height: 400px;
@@ -322,7 +323,8 @@
 }
 
 /* can't do unset cause stuff */
-.akito-loggingTable {
+.akito-table {
+  border-spacing: 4px;
   font-family: "Lucida Sans Unicode";
-  font-size: 12px;
+  font-size: 14px;
 }
