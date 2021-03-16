@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.0.0
+// @version      2.0.1
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
@@ -17,19 +17,21 @@
 // 1.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
 // 1.1.0 - Added primite adblock detection to notify users, keyword blacklist, more config settings, and non-refresh method when adding to cart
 // 2.0.0 - Complete fancy script overhaul adding primitive adblock detection and notification and removal of auto page-refreshing on actions (it was alot of work...)
+// 2.0.1 - Rounding out the script: UI addition and other stuff I honestly forgot about...
 
 // Script configuration
 const scriptConfig = {
     checkAdblock: true, // Whether to primitively check for adblock and notify if found (causes website issues)
     colorInterval: 1000, // In milliseconds, interval between updating buttons color for callback
-    keyWhitelist: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"], // Whitelist keywords for products
-    keyBlacklist: [], // Blacklist keywords for products (blacklist > whitelist)
+    keyWhitelist: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PlayStation 5"], // Whitelist keywords for products
+    keyBlacklist: ["5800X"], // Blacklist keywords for products (blacklist > whitelist)
     audioURL: "https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3", // Notification sound URL, feel free to change!
     // /!\  You probably shouldn't edit the values below unless you know what you're doing  /!\
     errorDelay: 250, // In milliseconds, delay before reloading saved item elements when error detected
+    errorCheckDelay: 250, // In milliseconds, delay before checking whether error element shows up when clicking when queue popped
     cartCheckDelay: 250, // In milliseconds, delay before checking for cart removed message on cart modification callback
     cartSkipDelay: 5000, // In milliseconds, delay when skipping waiting for unload on cart item removal callback
-    loadUnloadDelay: 50, // In milliseconds, delay between periodic polling for loading and unloading saved item elements
+    loadUnloadDelay: 250, // In milliseconds, delay between periodic polling for loading and unloading saved item elements
 };
 
 // Variables for script usage, don't modify unless you know what you're doing
@@ -106,8 +108,8 @@ async function resetSaved(skipUnload, fromCart) {
         const button = savedButtons[index];
         const buttonColor = elementColor(button);
         const available = !button.classList.contains("disabled");
-        if((buttonColor === "white" || buttonColor === "blue")) { // Addable, should be available?
-
+        if((buttonColor === "white" || buttonColor === "blue") && button.innerText !== "Find a Store") { // Addable, should be available?
+            button.click();
         } else if(buttonColor === "grey" && available === true) { // Currently queued
             // Store relevant info into storage
             const sku = savedSKUs[index];
@@ -123,9 +125,14 @@ async function resetSaved(skipUnload, fromCart) {
 
             // Initiate edge detection for callback color changes
             // I think it turns to white? Does it sometimes turn yellow as well?
-            edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], function() {
-                audio.play();
+            edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], async function() {
                 button.click();
+
+                // Only play button if no error shown (wait, unavailable for online, etc.)
+                await new Promise(r => setTimeout(r, scriptConfig.errorCheckDelay));
+                if(!$(".c-alert-content")[0]) {
+                    audio.play();
+                } // Might force a refresh since stuck on "Add to Cart"
             });
         }
     }
@@ -143,8 +150,6 @@ async function resetSaved(skipUnload, fromCart) {
     // Setup page banner and initiate runtime when page fully loaded
     // User also notified through alert / banner if adblock detected
     window.addEventListener('DOMContentLoaded', async function() {
-        alert("The new version of the script, while tested somewhat thoroughly (checklist at bottom of script) does not currently have a UI and could be glitchy. Revert to https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/b792aa9fc72062772baf598f4dca71afb5dc79fa/script_cart.js if you're uncomfortable.")
-
         // Short delay to allow for adblock probes to finish
         if(scriptConfig.checkAdblock === true) {
             await new Promise(r => setTimeout(r, 1000));
@@ -174,6 +179,7 @@ async function resetSaved(skipUnload, fromCart) {
 /*
 == Current Bugs ==
 - Clicking on "Please Wait" breaks periodic interval check
+- Cart doesn't show saved bundles (can't fix that honestly)
 == Current Testing Checklist ==
 [X] Adblock detection user notification
 [X] Error message element DOM insert callback
