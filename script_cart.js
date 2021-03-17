@@ -263,11 +263,6 @@ async function resetSaved(skipUnload, fromCart) {
         await resetSaved(true, false); // Initial call on page load
 
         loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
-        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
-        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
-        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
-        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
-        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
 
         // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
         // window.cart extraordinarily slippery, unable to hook getters/setters or anything
