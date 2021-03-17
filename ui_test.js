@@ -6,13 +6,15 @@ const settingsDiv = generateWindow(
     "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_settings_48px-512.png",
     "Settings",
     400,
-    400
+    400,
+    true,
 );
 const loggingDiv = generateWindow(
     "https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png",
     "Debug Logging",
     800,
-    400
+    400,
+    true,
 );
 
 const settings = {
@@ -22,7 +24,7 @@ const settings = {
     pollInterval: {description: "Polling Interval", type: "number", value: 500},
     initialDelay: {description: "Initial Delay", type: "number", value: 500},
     soldOutDelay: {description: "Sold Out Delay", type: "number", value: 60000},
-} 
+};
 
 const func = designateLogging(loggingDiv);
 setInterval(function() {

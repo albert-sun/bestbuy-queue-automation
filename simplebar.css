@@ -257,6 +257,9 @@
   font-size: 16px;
 }
 
+.akito-compatscroll {
+  overflow-y: scroll;
+}
 
 /* left, width, and height defined externally */
 .akito-window {
@@ -324,6 +327,7 @@
 
 /* can't do unset cause stuff */
 .akito-table {
+  width: 100%;
   border-spacing: 4px;
   font-family: "Lucida Sans Unicode";
   font-size: 14px;

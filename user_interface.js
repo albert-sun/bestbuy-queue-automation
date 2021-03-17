@@ -40,14 +40,14 @@ function generateHeader(text) {
     return header;
 }
 
-// Generates and adds footer icon and window, and automates setting management if settingsInfo is not undefined.
+// Generates and adds footer icon and window (todo: add compatibility mode for Best Buy...)
 // Window is added to slide controller, and global icon and window offset are incremented per initialization.
 // @param {string} iconURL
 // @param {string} title
 // @param {number} width
 // @param {number} height
-// @param (optional) {Object} settingsInfo
-function generateWindow(iconURL, title, width, height, settingsInfo) {
+// @param {boolean} compatibility
+function generateWindow(iconURL, title, width, height, compatibility = false) {
     // Check whether footer has even been initialized
     if(footer === undefined) {
         throw 'Footer has not been initialized yet!';
@@ -82,6 +82,12 @@ function generateWindow(iconURL, title, width, height, settingsInfo) {
     // Initialize actual window with given width, height, and left offset
     const thisWindow = document.createElement("div");
     thisWindow.classList.add("akito-window");
+    if(compatibility === true) {
+        thisWindow.classList.add("akito-compatscroll");
+    } else {
+        thisWindow.style.width = width;
+        thisWindow.style.height = height;
+    }
     // Best Buy doesn't let me set the left property that's so stupid
     statuses[index] = false;
     selectors[index] = $(thisWindow);
@@ -96,11 +102,11 @@ function generateWindow(iconURL, title, width, height, settingsInfo) {
     contentDiv.classList.add("akito-windowContent");
 
     // Add to document body and retrieve selector when loaded
-    $(document).ready(function() {
+    window.addEventListener("DOMContentLoaded", function(_) {
         document.body.appendChild(thisWindow);
         $(thisWindow).hide(); // Best Buy forcing me to initially hide?
-        new SimpleBar(contentDiv);
-    });
+        if(compatibility === false) { new SimpleBar(contentDiv); }
+    })
 
     return contentDiv;
 }
@@ -153,7 +159,7 @@ function designateSettings(contentDiv, settings) {
     contentDiv.appendChild(settingsTable);
     settingsTable.classList.add("akito-table");
 
-    // Transform and sort settings by type and alphabetical order 
+    // Transform and sort settings by type and alphabetical order
     const settingsArray = [];
     for(const property in settings) {
         settingsArray.push(settings[property]);
@@ -186,7 +192,7 @@ function designateSettings(contentDiv, settings) {
         // Generate cell showing setting description (onhover?)
         const descriptionCell = document.createElement("td");
         row.appendChild(descriptionCell);
-        descriptionCell.innerHTML = `<b>${setting.description}</b>`;        
+        descriptionCell.innerHTML = `<b>${setting.description}</b>`;
 
         // Generate cell with actual switcher (checkbox, slider, etc.)
         // Currently no support for arrays because they're complicated
@@ -196,7 +202,7 @@ function designateSettings(contentDiv, settings) {
         switch(setting.type) {
             case "boolean": // Checkbox
                 const checkbox = document.createElement("input");
-                row.appendChild(checkbox);
+                settingCell.appendChild(checkbox);
                 checkbox.setAttribute("type", "checkbox");
                 checkbox.checked = setting.value;
                 checkbox.onclick = function() {
@@ -205,7 +211,7 @@ function designateSettings(contentDiv, settings) {
                 break;
             case "number": // Numerical slider input + display
                 const numberInput = document.createElement("input");
-                row.appendChild(numberInput);
+                settingCell.appendChild(numberInput);
                 numberInput.setAttribute("type", "number");
                 numberInput.value = setting.value;
                 numberInput.onclick = function() {
