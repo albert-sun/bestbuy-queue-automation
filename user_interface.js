@@ -33,8 +33,8 @@ function generateHeader(text) {
 
     // Generate div containing actual text
     const headerText = document.createElement("p");
-    header.appendChild(headerText);
     headerText.classList.add("akito-headerTitle");
+    header.appendChild(headerText);
     headerText.innerText = text;
 
     return header;
@@ -64,9 +64,9 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
     // Initialize a element for window toggle and add to footer
     const iconClick = document.createElement("a");
     const index = windowIndex++; // Copy constant for onclick
-    footer.insertBefore(iconClick, footer.children[footer.children.length - 2]); // doesn't matter because order
     iconClick.classList.add("akito-iconClick");
     iconClick.classList.add(`akito-icon${placeIndex}`);
+    footer.insertBefore(iconClick, footer.children[footer.children.length - 2]); // doesn't matter because order
     iconClick.href = "#";
     iconClick.onclick = function() {
         windowControl(index);
@@ -75,8 +75,8 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
 
     // Initialize icon for window toggle "button"
     const iconImage = document.createElement("img");
-    iconClick.appendChild(iconImage);
     iconImage.classList.add("akito-iconImage");
+    iconClick.appendChild(iconImage);
     iconImage.src = iconURL;
 
     // Initialize actual window with given width, height, and left offset
@@ -85,10 +85,11 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
     const contentDiv = document.createElement("div"); // Initialize in advance for compatibility?
     thisWindow.appendChild(contentDiv);
     if(compatibility === true) {
-        contentDiv.classList.add("akito-compatscroll");
+        contentDiv.classList.add("akito-windowContentCompat");
     } else {
         thisWindow.style.width = width;
         thisWindow.style.height = height;
+        contentDiv.classList.add("akito-windowContent");
     }
     // Best Buy doesn't let me set the left property that's so stupid
     statuses[index] = false;
@@ -97,9 +98,6 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
     // Initialize window header with title
     const header = generateHeader(title);
     thisWindow.appendChild(header);
-
-    // Initialize content div with scroll bar
-    contentDiv.classList.add("akito-windowContent");
 
     // Add to document body and retrieve selector when loaded
     window.addEventListener("DOMContentLoaded", function(_) {
@@ -121,15 +119,15 @@ function generateInterface(scriptText, messageText) {
 
     // Script name/version/author information
     const scriptInfo = document.createElement("p");
-    footer.appendChild(scriptInfo);
     scriptInfo.classList.add("akito-scriptInfo");
+    footer.appendChild(scriptInfo);
     scriptInfo.style.order = 0;
     scriptInfo.innerText = scriptText;
 
     // Miscellaneous message info (donation, link, etc.)
     const messageInfo = document.createElement("p");
-    footer.appendChild(messageInfo);
     messageInfo.classList.add("akito-messageInfo");
+    footer.appendChild(messageInfo);
     messageInfo.style.order = 1;
     messageInfo.innerHTML = messageText;
 

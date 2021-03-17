@@ -6,11 +6,11 @@
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
-// @require      https://ghostbin.co/paste/wrw978s/raw
-// @require      https://ghostbin.co/paste/7fkg/raw
+// @require      https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://ghostbin.co/paste/adzm7/raw
+// @resource css https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -262,6 +262,11 @@ async function resetSaved(skipUnload, fromCart) {
         loggingFunction("Performing initial setup of saved items watcher (no bundles currently, sorry!)");
         await resetSaved(true, false); // Initial call on page load
 
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
         loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
 
         // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
