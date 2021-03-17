@@ -28,6 +28,7 @@ function callbackArray(array, callback, getSet) {
 // @param {string} getSet
 function callbackObject(obj, property, callback, getSet) {
     const altProperty = "_" + property;
+    console.log(obj);
     obj[altProperty] = obj[property]; // Migrate in advance
     if(getSet.includes("get")) { // Object getter callback
         Object.defineProperty(obj, property, {
@@ -124,7 +125,7 @@ const colors = [
 ];
 function elementColor(element) {
     // Get the rendered background color of the element
-    const colorText = window.getComputedStyle(element, null).getPropertyValue("background-color");
+    const colorText = getComputedStyle(element, null).getPropertyValue("background-color");
     if(colorText.includes("rgb(0, 0, 0")) { // element has no color = transparent
         return "transparent";
     }

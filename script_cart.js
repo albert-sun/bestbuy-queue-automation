@@ -1,43 +1,49 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.0.1
+// @version      2.1.0
 // @description  Auto-presses drops when button changes to Add
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/script_cart.js
-// @require      https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/utilities.js
+// @require      https://ghostbin.co/paste/wrw978s/raw
+// @require      https://ghostbin.co/paste/7fkg/raw
+// @require      https://code.jquery.com/jquery-2.2.3.min.js
+// @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
+// @resource css https://ghostbin.co/paste/adzm7/raw
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
-// @grant        none
+// @grant        GM_getResourceText
+// @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        unsafeWindow
 // ==/UserScript==
 /* globals $, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
+/* globals generateInterface, generateWindow, designateLogging, designateSettings */
 
 // Version Changelog
 // 1.0.2 - Added update and download URL to metadata, go to Tampermonkey settings -> enable "Check Interval" for auto-updating
 // 1.1.0 - Added primite adblock detection to notify users, keyword blacklist, more config settings, and non-refresh method when adding to cart
 // 2.0.0 - Complete fancy script overhaul adding primitive adblock detection and notification and removal of auto page-refreshing on actions (it was alot of work...)
-// 2.0.1 - Rounding out the script: UI addition and other stuff I honestly forgot about...
+// 2.1.0 - Fancy fancy new user interface (lots of hacks since Best Buy hates me), please debug and let me know how it goes!
 
-// Script configuration
-const scriptConfig = {
-    checkAdblock: true, // Whether to primitively check for adblock and notify if found (causes website issues)
-    colorInterval: 1000, // In milliseconds, interval between updating buttons color for callback
-    keyWhitelist: ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PlayStation 5"], // Whitelist keywords for products
-    keyBlacklist: ["5800X"], // Blacklist keywords for products (blacklist > whitelist)
-    audioURL: "https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3", // Notification sound URL, feel free to change!
-    // /!\  You probably shouldn't edit the values below unless you know what you're doing  /!\
-    errorDelay: 250, // In milliseconds, delay before reloading saved item elements when error detected
-    errorCheckDelay: 250, // In milliseconds, delay before checking whether error element shows up when clicking when queue popped
-    cartCheckDelay: 250, // In milliseconds, delay before checking for cart removed message on cart modification callback
-    cartSkipDelay: 5000, // In milliseconds, delay when skipping waiting for unload on cart item removal callback
-    loadUnloadDelay: 250, // In milliseconds, delay between periodic polling for loading and unloading saved item elements
+const version = "2.1.0";
+const scriptName = "bestBuy-cartSavedItems"; // For settings retrieval
+const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
+const messageText = "Thank you and good luck! | https://github.com/albert-sun/bestbuy-queue-automation";
+
+// Script-specific settings, please don't modify as it probably won't do anything!
+// Instead, use the settings user interface implemented within the script itself.
+const settings = {
+    checkAdblock: { description: "Primitive Adblock Check", type: "boolean", value: true },
+    initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
+    colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
+    loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
+    errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
+    cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
+    cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
 };
-
-// Variables for script usage, don't modify unless you know what you're doing
-const version = "2.0.0";
-const scriptDesc = `Best Buy Automation (Cart Saved Items) v${version} by akito#9528 / Albert Sun`;
-const donationText = "Thank you! | Bitcoin: bc1q6u7kalsxunl5gleqcx3ez4zn6kmahrsnevx2w4 / 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | Paypal: akitocodes@gmail.com";
 const storage = {
     buttons: {}, //_________ mapping SKU -> add button elements
     colors: {}, //__________ mapping SKU -> current button color
@@ -49,7 +55,59 @@ const adblockURLs = [
     "https://googleads.g.doubleclick.net/pagead/html/",
     "https://online-metrix.net/",
 ]; // Test request URLs for detecting adblock status
-const audio = new Audio(scriptConfig.audioURL);
+const keyWhitelist = ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"];
+const keyBlacklist = []; // Temporary, blacklist > whitelist
+const audio = new Audio("https://proxy.notificationsounds.com/notification-sounds/definite-555/download/file-sounds-1085-definite.mp3");
+let loggingFunction = undefined; // Leave for "global" logging usage by script
+
+// Load user interface consisting of footer and individual windows
+// Return debug logging function tied to logging window for usage elsewhere
+// @returns {function}
+async function loadInterface() {
+    // Load SimpleBar and elements CSS
+    // Note that SimpleBar is useless for Best Buy...
+    const my_css = GM_getResourceText("css");
+    GM_addStyle(my_css);
+
+    // Load script-specific settings from Tampermonkey storage
+    for(const property in settings) {
+        const lookupKey = `${scriptName}_${property}`;
+        const storageValue = await GM_getValue(lookupKey, settings[property].value);
+
+        // Attach setter to settings to save any changes
+        // Inconvenient because it requires separate property for each child...
+        settings[property]._value = storageValue;
+        delete settings[property].value;
+        Object.defineProperty(settings[property], "value", {
+            get: function() { return settings[property]._value; },
+            set: function(value) {
+                settings[property]._value = value;
+                GM_setValue(lookupKey, value);
+            }
+        });
+    }
+
+    // Generate script footer and elements for settings and logging
+    generateInterface(scriptText, messageText);
+    const settingsDiv = generateWindow(
+        "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_settings_48px-512.png",
+        "Settings (Updates on Refresh)", // Width height ignored because compatibility mode
+        400, 400, true // Compatibility mode enabled
+    );
+    const loggingDiv = generateWindow(
+        "https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png",
+        "Debug Logging", // Width height ignored because compatibility mode
+        800, 400, true // Compatibility mode enabled
+    );
+
+    // Designate the two windows as setting and logging windows
+    designateSettings(settingsDiv, settings);
+    const loggingFunc = designateLogging(loggingDiv);
+
+    loggingFunc("Finished initializing script user interface");
+
+    return loggingFunc;
+}
 
 // Called on cart change, clear storage and re-retrieve saved items HTMl attributes.
 // Saved item elements are unloaded and reloaded with identical but different instances.
@@ -57,6 +115,9 @@ const audio = new Audio(scriptConfig.audioURL);
 // @param {boolean} skipUnload
 // @param {boolean} fromCart
 async function resetSaved(skipUnload, fromCart) {
+    loggingFunction(`Saved items watcher reset triggered from ${fromCart === true ? "non-" : ""}cart source`);
+    loggingFunction("Clearing existing watcher polling intervals and temporary storage");
+
     // Clear existing queue polling intervals
     // Then, clear storage attributes by resetting to empty object
     for(const sku in storage.intervalIDs) {
@@ -69,19 +130,30 @@ async function resetSaved(skipUnload, fromCart) {
 
     // Periodically poll until saved items unload and reload
     let savedWrappersRes;
-    if(fromCart) { await new Promise(r => setTimeout(r, scriptConfig.cartCheckDelay)); } // Extra wait, for cart or something idek anymore
-    if($(".removed-item-info__wrapper")[0] === undefined) { // Wait instead of polling for removed
+    if(fromCart) { await new Promise(r => setTimeout(r, settings.cartCheckDelay.value)); } // Extra wait, for cart or something idek anymore
+    if($(".removed-item-info__wrapper")[0] === undefined || skipUnload === true) { // Wait instead of polling for removed
+        loggingFunction("Waiting for saved item elements to unload from document");
+
         do { // Wait for existing saved items elements to unload
             savedWrappersRes = $(".saved-items__card-wrapper");
-            await new Promise(r => setTimeout(r, scriptConfig.loadUnloadDelay));
-        } while(savedWrappersRes.length !== 0 && skipUnload === false);
-    } else { // Weird edge case where elements never truly "disappear", wait instead
-        await new Promise(r => setTimeout(r, scriptConfig.cartSkipDelay));
+            await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
+        } while(savedWrappersRes.length !== 0);
+
+        loggingFunction("Finished waiting for saved item elements unloading");
+    } else if($(".removed-item-info__wrapper")[0] !== undefined) { // Weird edge case where elements never truly "disappear", wait instead
+        loggingFunction("Product removed from cart, performing alternate safety delay instead");
+
+        await new Promise(r => setTimeout(r, settings.cartSkipTimeout.value));
     }
+
+    loggingFunction("Waiting for document to be populated with \"new\" saved item elements");
+
     do { // Wait for "new" saved items elements to load
         savedWrappersRes = $(".saved-items__card-wrapper");
-        await new Promise(r => setTimeout(r, scriptConfig.loadUnloadDelay));
+        await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
     } while(savedWrappersRes.length === 0);
+
+    loggingFunction("Finished waiting for \"new\" saved item elements to load");
 
     // Convert selector result and parse other elements
     const savedSKUs = savedWrappersRes.toArray().map(element => element.getAttribute("data-test-saved-sku"));
@@ -89,11 +161,13 @@ async function resetSaved(skipUnload, fromCart) {
     const savedDescriptions = descriptionElements.map(element => element.innerText);
     const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
 
+    loggingFunction(`${savedDescriptions.length} saved items found, filtering whitelist (currently hardcoded into script)`);
+
     // Parse keywords of each and splice those with blacklisted or without whitelisted
     let index = savedDescriptions.length;
     while(index--) { // Loop in reverse to allow splicing
         const description = savedDescriptions[index];
-        const valid = checkBlackWhitelist(description, scriptConfig.keyBlacklist, scriptConfig.keyWhitelist);
+        const valid = checkBlackWhitelist(description, keyBlacklist, keyWhitelist);
         if(valid === false) { // Check whether the saved item is allowed
             savedSKUs.splice(index, 1);
             savedDescriptions.splice(index, 1);
@@ -101,16 +175,31 @@ async function resetSaved(skipUnload, fromCart) {
         }
     }
 
+    loggingFunction(`Finished, ${savedDescriptions.length} saved items remaining after filtering`);
+    loggingFunction(`Iterating through remaining elements for button clicking and interval setup`);
+
     // Iterate through buttons and deduce whether addable, queued, or unavailable
     // If addable, click the button (hopefully error element detector callback triggers)
     // If queued, store relevant info, initiate setInterval, and initiate edge detection
+    let anyClicked = false;
     for(const index in savedButtons) {
         const button = savedButtons[index];
         const buttonColor = elementColor(button);
+        const description = savedDescriptions[index];
         const available = !button.classList.contains("disabled");
-        if((buttonColor === "white" || buttonColor === "blue") && button.innerText !== "Find a Store") { // Addable, should be available?
+        if((buttonColor === "white" || buttonColor === "blue") && settings.initialClick.value) { // Addable, should be available?
+            loggingFunction(`[${description}] currently addable, clicking and refreshing after traversal`);
+
             button.click();
+            anyClicked = true;
         } else if(buttonColor === "grey" && available === true) { // Currently queued
+            if(anyClicked === true) {
+                loggingFunction(`[${description}] currently in queue but not adding pending refresh`);
+                continue;
+            }
+
+            loggingFunction(`[${description}] currently in queue, attaching check interval and callback`);
+
             // Store relevant info into storage
             const sku = savedSKUs[index];
             storage.buttons[sku] = button;
@@ -121,68 +210,74 @@ async function resetSaved(skipUnload, fromCart) {
             // Remember that intervals are cleared on each resetSaved call
             storage.intervalIDs[sku] = setInterval(function() {
                 storage.colors[sku] = elementColor(storage.buttons[sku]);
-            }, scriptConfig.colorInterval);
+            }, settings.colorInterval.value);
 
             // Initiate edge detection for callback color changes
             // I think it turns to white? Does it sometimes turn yellow as well?
-            edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], async function() {
-                button.click();
+            edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], function() {
+                loggingFunction(`Queue for [${description}] popped detecting grey->white/yellow transition, playing audio and clicking button`);
 
-                // Only play button if no error shown (wait, unavailable for online, etc.)
-                await new Promise(r => setTimeout(r, scriptConfig.errorCheckDelay));
-                if(!$(".c-alert-content")[0]) {
-                    audio.play();
-                } // Might force a refresh since stuck on "Add to Cart"
+                audio.play();
+                button.click();
             });
         }
+    }
+
+    // Force reload if any buttons are clicked to ensure status update
+    if(anyClicked === true) {
+        location.reload();
     }
 }
 
 (async function() {
-    // Primitive adblock check: attempting to fetch commonly blocked domains
+    'use strict';
+
+    // Load user interface including footer and windows
+    loggingFunction = await loadInterface();
+
+    // Primitive adblock check: check for failure when fetching commonly blocked domains
     let adblockDetected = undefined;
-    if(scriptConfig.checkAdblock === true) {
-        for(const url of adblockURLs) {
-            fetch(url).catch(function() { adblockDetected = true; });
+    if(settings.checkAdblock.value === true) {
+        const promises = adblockURLs.map(url => fetch(url));
+        const results = await Promise.allSettled(promises);
+        const failed = results.filter(x => x.status !== "fulfilled");
+        adblockDetected = failed.length > 0;
+
+        loggingFunction("Finished primitive adblock check");
+        if(adblockDetected === true) {
+            loggingFunction("/!\\ Adblock detected, please disable for maximum website compatibility");
         }
     }
 
-    // Setup page banner and initiate runtime when page fully loaded
-    // User also notified through alert / banner if adblock detected
-    window.addEventListener('DOMContentLoaded', async function() {
-        // Short delay to allow for adblock probes to finish
-        if(scriptConfig.checkAdblock === true) {
-            await new Promise(r => setTimeout(r, 1000));
-        }
-
-        // Advise user to disable adblock if detected
-        if(adblockDetected === true) {
-            // Notify the user here somehow
-        }
+    addEventListener('DOMContentLoaded', async function() {
+        loggingFunction("Setting-up reset callback on error message detection");
 
         // Force refresh of saved item elements whenever error detected using jQuery
         // Wait some time interval before refreshing to let auto-clicker finish clicking in runtime
         $(".alerts__order").bind('DOMNodeInserted', async function(e) {
-            await new Promise(r => setTimeout(r, scriptConfig.errorDelay));
+            await new Promise(r => setTimeout(r, settings.errorResetDelay.value));
             await resetSaved(false, false);
         });
 
+        loggingFunction("Performing initial setup of saved items watcher (no bundles currently, sorry!)");
         await resetSaved(true, false); // Initial call on page load
+
+        loggingFunction("Setting-up reset callback on cart status change (including pickup/shipping modification)");
 
         // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
         // window.cart extraordinarily slippery, unable to hook getters/setters or anything
         // Currently triggers on picking/shipping swaps but don't want custom callback function...
-        callbackObject(window.__META_LAYER_META_DATA, "order", function() { resetSaved(false, true) }, "set");
+        callbackObject(__META_LAYER_META_DATA, "order", function() { resetSaved(false, true) }, "set");
     });
 }());
 
 /*
 == Current Bugs ==
 - Clicking on "Please Wait" breaks periodic interval check
-- Cart doesn't show saved bundles (can't fix that honestly)
+- Must reload page sometimes after clicking initial add because no "Please Wait" transition
 == Current Testing Checklist ==
 [X] Adblock detection user notification
-[X] Error message element DOM insert callback
+[ ] Error message element DOM insert callback
 [X] Cart addition / removal (/ fulfillment swap) callback
 [X] Correct whitelist and blacklist keyword product filtering and splicing
 [X] Correct added / queued / unavailable element detection

@@ -82,8 +82,10 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
     // Initialize actual window with given width, height, and left offset
     const thisWindow = document.createElement("div");
     thisWindow.classList.add("akito-window");
+    const contentDiv = document.createElement("div"); // Initialize in advance for compatibility?
+    thisWindow.appendChild(contentDiv);
     if(compatibility === true) {
-        thisWindow.classList.add("akito-compatscroll");
+        contentDiv.classList.add("akito-compatscroll");
     } else {
         thisWindow.style.width = width;
         thisWindow.style.height = height;
@@ -97,8 +99,6 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
     thisWindow.appendChild(header);
 
     // Initialize content div with scroll bar
-    const contentDiv = document.createElement("div");
-    thisWindow.appendChild(contentDiv);
     contentDiv.classList.add("akito-windowContent");
 
     // Add to document body and retrieve selector when loaded
@@ -124,14 +124,14 @@ function generateInterface(scriptText, messageText) {
     footer.appendChild(scriptInfo);
     scriptInfo.classList.add("akito-scriptInfo");
     scriptInfo.style.order = 0;
-    scriptInfo.innerText = "Best Buy (Cart Saved Items) v2.0.0 | Albert Sun / akito#9528";
+    scriptInfo.innerText = scriptText;
 
     // Miscellaneous message info (donation, link, etc.)
     const messageInfo = document.createElement("p");
     footer.appendChild(messageInfo);
     messageInfo.classList.add("akito-messageInfo");
     messageInfo.style.order = 1;
-    messageInfo.innerHTML = "Thank you and good luck! | https://github.com/albert-sun/bestbuy-queue-automation";
+    messageInfo.innerHTML = messageText;
 
     // Append elements and process selectors on document load
     $(document).ready(function() {
@@ -214,9 +214,9 @@ function designateSettings(contentDiv, settings) {
                 settingCell.appendChild(numberInput);
                 numberInput.setAttribute("type", "number");
                 numberInput.value = setting.value;
-                numberInput.onclick = function() {
+                $(numberInput).change(function() {
                     setting.value = numberInput.value;
-                };
+                });
                 break;
             case "array": break; // Currently not implemented
         }
@@ -238,10 +238,10 @@ function designateLogging(contentDiv) {
         const row = document.createElement("tr");
 
         // Generate timestamp cell
-        const timestamp = "[" + (new Date()).toISOString().substring(11, 19) + "]";
+        const timestamp = "[" + (new Date()).toTimeString().split(' ')[0] + "]";
         const loggingCell = document.createElement("td");
         row.appendChild(loggingCell);
-        loggingCell.innerText = `${timestamp} ${message}`;
+        loggingCell.innerHTML= `<b style="font-weight:bold !important">${timestamp}</b> ${message}`;
 
         loggingTable.insertBefore(row, loggingTable.firstChild);
     }

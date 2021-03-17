@@ -257,16 +257,12 @@
   font-size: 16px;
 }
 
-.akito-compatscroll {
-  overflow-y: scroll;
-}
-
 /* left, width, and height defined externally */
 .akito-window {
   position: fixed;
   left: 3px;
   bottom: 29px;
-  width: 400px;
+  width: 800px;
   height: 400px;
   padding: 4px;
   background: white;
@@ -285,6 +281,17 @@
   bottom: 8px;
   left: 8px;
   right: 8px;
+}
+
+/* comes with built-in scroll? */
+.akito-windowContentCompat {
+  all: initial;
+  position: absolute;
+  top: 42px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  overflow-y: scroll;
 }
 
 .akito-footer {
