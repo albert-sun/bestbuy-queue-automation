@@ -1,6 +1,8 @@
 # Best Buy Queue Automation Userscripts
 { [Installation](<https://github.com/albert-sun/bestbuy-queue-automation#Installation>) | [Scripts](<https://github.com/albert-sun/bestbuy-queue-automation#Scripts>) | [Frequently Asked Questions](<https://github.com/albert-sun/bestbuy-queue-automation#Frequently-Asked-Questions>) | [Troubleshooting](<https://github.com/albert-sun/bestbuy-queue-automation#Troubleshooting>) | [Contact](<https://github.com/albert-sun/bestbuy-queue-automation#Contact>) }  
 
+**⚠️ Soon to be deprecated and replaced with https://github.com/albert-sun/tamper-scripts, only product script not yet migrated. Please go there for new updates to the cart script, thanks! ⚠️**  
+
 A collection of Tampermonkey userscripts for automating Best Buy's constrained inventory product queue. Currently only automates cart addition (and other miscellaneous utilities), no plans currently to automate checkout as that would provide too much of an unfair advantage. **Please let me know if you got anything through my scripts, it makes me feel happy knowing that my scripts are at least somewhat useful. Thanks again and good luck!**
 
 **Discord**: akito#9528  
