@@ -5,10 +5,6 @@
 
 A collection of Tampermonkey userscripts for automating Best Buy's constrained inventory product queue. Currently only automates cart addition (and other miscellaneous utilities), no plans currently to automate checkout as that would provide too much of an unfair advantage. **Please let me know if you got anything through my scripts, it makes me feel happy knowing that my scripts are at least somewhat useful. Thanks again and good luck!**
 
-**Discord**: akito#9528  
-**Twitch (for direct message)**: AkitoApocalypse  
-[Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | [My Bitcoin Address](1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t) | [My Ethereum Address](0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD)
-
 ## Installation
 1) Install either the TamperMonkey extension for Chrome / derivatives or the GreaseMonkey extension for Firefox.
 2) Download the desired scripts linked within the [Scripts](<https://github.com/albert-sun/bestbuy-queue-automation#Scripts>) section and add them to TamperMonkey / GreaseMonkey as a new script (for Tampermonkey: click extension icon -> "Create a new script...").
